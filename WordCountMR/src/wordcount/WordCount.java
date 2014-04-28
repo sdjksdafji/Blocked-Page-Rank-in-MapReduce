@@ -18,7 +18,7 @@ public class WordCount {
 		}
 
 		System.out.println("hello world");
-		Job job = Job.getInstance(new Configuration());
+		Job job = Job.getInstance(new Configuration(),"word count");
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(IntWritable.class);
 
@@ -33,7 +33,7 @@ public class WordCount {
 
 		job.setJarByClass(WordCount.class);
 
-		job.submit();
+		System.exit(job.waitForCompletion(true) ? 0 : 1);
 
 	}
 }
