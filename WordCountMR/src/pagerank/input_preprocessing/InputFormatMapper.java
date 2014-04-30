@@ -13,7 +13,7 @@ import org.apache.hadoop.mapreduce.Mapper.Context;
  *	 block index of v + v + initial page rank of v + all edges start from v (in form block of destination + destination vertex)
  */
 public class InputFormatMapper extends Mapper<Object, Text, IntWritable, Text> {
-	private static final double REJECT_MIN = 0.895;
+	private static final double REJECT_MIN = 0.895 * 0.99;
 	private static final double REJECT_LIMIT = REJECT_MIN + 0.01;
 	private static final int numOfNodes = 7524402;
 	private static final double INIT_PR = 1.0 / numOfNodes;
