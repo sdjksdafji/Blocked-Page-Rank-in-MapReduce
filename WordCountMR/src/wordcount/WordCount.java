@@ -18,6 +18,13 @@ public class WordCount {
 		}
 
 		System.out.println("hello world");
+		Job job = getJobForWordCount(args);
+
+		System.exit(job.waitForCompletion(true) ? 0 : 1);
+
+	}
+	
+	private static Job getJobForWordCount(String[] args) throws Exception{
 		Job job = Job.getInstance(new Configuration(),"word count");
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(IntWritable.class);
@@ -32,8 +39,6 @@ public class WordCount {
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
 		job.setJarByClass(WordCount.class);
-
-		System.exit(job.waitForCompletion(true) ? 0 : 1);
-
+		return job;
 	}
 }
