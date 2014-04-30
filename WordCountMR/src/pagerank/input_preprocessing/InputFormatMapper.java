@@ -15,7 +15,8 @@ import org.apache.hadoop.mapreduce.Mapper.Context;
 public class InputFormatMapper extends Mapper<Object, Text, IntWritable, Text> {
 	private static final double REJECT_MIN = 0.895;
 	private static final double REJECT_LIMIT = REJECT_MIN + 0.01;
-	private static final double INIT_PR = 0.01;
+	private static final int numOfNodes = 7524402;
+	private static final double INIT_PR = 1.0 / numOfNodes;
 	private IntWritable blockIdWritable = new IntWritable();
 	private Text strWritable = new Text();
 
