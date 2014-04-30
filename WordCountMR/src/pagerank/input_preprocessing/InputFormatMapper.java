@@ -85,7 +85,7 @@ public class InputFormatMapper extends Mapper<Object, Text, IntWritable, Text> {
 
 	}
 
-	private boolean selectInputLine(double x) {
+	public static boolean selectInputLine(double x) {
 		return (((x >= REJECT_MIN) && (x < REJECT_LIMIT)) ? false : true);
 	}
 

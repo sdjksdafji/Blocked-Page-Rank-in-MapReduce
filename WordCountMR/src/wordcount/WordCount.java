@@ -9,6 +9,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+import org.apache.hadoop.mapreduce.lib.reduce.IntSumReducer;
 
 public class WordCount {
 	public static void main(String[] args) throws Exception {
@@ -18,7 +19,7 @@ public class WordCount {
 		}
 
 		System.out.println("hello world");
-		Job job = getJobForWordCount(args);
+		Job job = getJobForCalculateTotalNumberOfNode(args);
 
 		System.exit(job.waitForCompletion(true) ? 0 : 1);
 
@@ -31,6 +32,24 @@ public class WordCount {
 
 		job.setMapperClass(WordMapper.class);
 		job.setReducerClass(WordReducer.class);
+
+		job.setInputFormatClass(TextInputFormat.class);
+		job.setOutputFormatClass(TextOutputFormat.class);
+
+		FileInputFormat.setInputPaths(job, new Path(args[0]));
+		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+		job.setJarByClass(WordCount.class);
+		return job;
+	}
+	
+	private static Job getJobForCalculateTotalNumberOfNode(String[] args) throws Exception{
+		Job job = Job.getInstance(new Configuration(),"calculate total num of node");
+		job.setOutputKeyClass(Text.class);
+		job.setOutputValueClass(IntWritable.class);
+
+		job.setMapperClass(pagerank.input_preprocessing.CaclulateTotalNumberOfNodeMapper.class);
+		job.setReducerClass(IntSumReducer.class);
 
 		job.setInputFormatClass(TextInputFormat.class);
 		job.setOutputFormatClass(TextOutputFormat.class);
