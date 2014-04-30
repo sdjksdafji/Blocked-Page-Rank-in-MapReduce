@@ -11,7 +11,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.mapreduce.lib.reduce.IntSumReducer;
 
-public class WordCount {
+public class HadoopDriver {
 	public static void main(String[] args) throws Exception {
 		if (args.length != 2) {
 			System.out.println("usage: [input] [output]");
@@ -39,7 +39,7 @@ public class WordCount {
 		FileInputFormat.setInputPaths(job, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
-		job.setJarByClass(WordCount.class);
+		job.setJarByClass(HadoopDriver.class);
 		return job;
 	}
 	
@@ -57,7 +57,7 @@ public class WordCount {
 		FileInputFormat.setInputPaths(job, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
-		job.setJarByClass(WordCount.class);
+		job.setJarByClass(HadoopDriver.class);
 		return job;
 	}
 }

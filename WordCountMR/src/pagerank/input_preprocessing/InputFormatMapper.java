@@ -13,8 +13,8 @@ import org.apache.hadoop.mapreduce.Mapper.Context;
  *	 block index of v + v + initial page rank of v + all edges start from v (in form block of destination + destination vertex)
  */
 public class InputFormatMapper extends Mapper<Object, Text, IntWritable, Text> {
-	private static final double REJECT_MIN = 0.0;
-	private static final double REJECT_LIMIT = 0.0;
+	private static final double REJECT_MIN = 0.895;
+	private static final double REJECT_LIMIT = REJECT_MIN + 0.01;
 	private static final double INIT_PR = 0.01;
 	private IntWritable blockIdWritable = new IntWritable();
 	private Text strWritable = new Text();
@@ -81,9 +81,6 @@ public class InputFormatMapper extends Mapper<Object, Text, IntWritable, Text> {
 		return -1;
 	}
 
-	private void readBlockInfo() {
-
-	}
 
 	public static boolean selectInputLine(double x) {
 		return (((x >= REJECT_MIN) && (x < REJECT_LIMIT)) ? false : true);
