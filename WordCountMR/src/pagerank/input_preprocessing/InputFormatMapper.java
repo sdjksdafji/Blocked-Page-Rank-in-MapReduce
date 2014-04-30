@@ -43,6 +43,7 @@ public class InputFormatMapper extends Mapper<Object, Text, IntWritable, Text> {
 
 			formatDataAndEmit(src, dst, contex);
 		}
+		sc.close();
 	}
 
 	private int getBlockIdOfVertexId(int n) {
@@ -56,7 +57,6 @@ public class InputFormatMapper extends Mapper<Object, Text, IntWritable, Text> {
 				555467, 565846, 576225, 586604, 596585, 606367, 616148, 626448,
 				636240, 646022, 655804, 665666, 675448, 685230 };
 
-		int res = -1;
 		int start = 0;
 		int end = boundary.length - 1;
 		if (n >= 0 && n < 10328)

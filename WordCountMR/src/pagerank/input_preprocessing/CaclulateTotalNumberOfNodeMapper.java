@@ -33,5 +33,6 @@ public class CaclulateTotalNumberOfNodeMapper extends
 			
 			context.write(outputText, one);
 		}
+		sc.close();
 	}
 }
