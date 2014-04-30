@@ -10,14 +10,14 @@ public class PageRankValueWritable implements Writable {
 
 	private boolean nodeInfoOrSumInfo; // true = node info; false = sum info
 	private int vertexId;
-	private double value;
+	private double currentPageRank;
 	private int edgeVertex;
 	private int edgeBlock;
 
 	public void readFields(DataInput in) throws IOException {
 		this.nodeInfoOrSumInfo = in.readBoolean();
 		this.vertexId = in.readInt();
-		this.value = in.readDouble();
+		this.currentPageRank = in.readDouble();
 		this.edgeVertex = in.readInt();
 		this.edgeBlock = in.readInt();
 	}
@@ -25,7 +25,7 @@ public class PageRankValueWritable implements Writable {
 	public void write(DataOutput out) throws IOException {
 		out.writeBoolean(nodeInfoOrSumInfo);
 		out.writeInt(vertexId);
-		out.writeDouble(value);
+		out.writeDouble(currentPageRank);
 		out.writeInt(edgeVertex);
 		out.writeInt(edgeBlock);
 	}
@@ -38,6 +38,14 @@ public class PageRankValueWritable implements Writable {
 		return !this.nodeInfoOrSumInfo;
 	}
 
+	public void setNodeInformation() {
+		this.nodeInfoOrSumInfo = true;
+	}
+
+	public void setSumInformation() {
+		this.nodeInfoOrSumInfo = false;
+	}
+
 	public int getVertexId() {
 		return vertexId;
 	}
@@ -46,12 +54,12 @@ public class PageRankValueWritable implements Writable {
 		this.vertexId = vertexId;
 	}
 
-	public double getValue() {
-		return value;
+	public double getCurrentPageRank() {
+		return currentPageRank;
 	}
 
-	public void setValue(double value) {
-		this.value = value;
+	public void setCurrentPageRank(double currentPageRank) {
+		this.currentPageRank = currentPageRank;
 	}
 
 	public int getEdgeVertex() {
