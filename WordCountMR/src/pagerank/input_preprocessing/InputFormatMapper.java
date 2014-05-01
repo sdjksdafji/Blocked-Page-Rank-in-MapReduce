@@ -103,5 +103,17 @@ public class InputFormatMapper extends
 		this.pageRankValueWritable.setEdgeVertex(dst);
 
 		contex.write(blockIdWritable, pageRankValueWritable);
+		
+		// write out a self looped edge in case a node do not have out-going edge
+		
+		this.blockIdWritable.set(dstBlock);
+		
+		this.pageRankValueWritable.setNodeInformation();
+		this.pageRankValueWritable.setVertexId(dst);
+		this.pageRankValueWritable.setCurrentPageRank(INIT_PR);
+		this.pageRankValueWritable.setEdgeBlock(dstBlock);
+		this.pageRankValueWritable.setEdgeVertex(dst);
+
+		contex.write(blockIdWritable, pageRankValueWritable);
 	}
 }

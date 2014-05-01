@@ -52,8 +52,8 @@ public class PageRankMapper extends
 			return false;
 		}
 		this.dstVertexId = sc.nextInt();
-		
-		if(!sc.hasNextInt()){
+
+		if (!sc.hasNextInt()) {
 			return false;
 		}
 		this.vertexDegree = sc.nextInt();
@@ -76,16 +76,18 @@ public class PageRankMapper extends
 
 	private void emitSumInfo(Context context) throws IOException,
 			InterruptedException {
-		this.blockIdWritable.set(dstBlockId);
+		if (!this.pageRankValueWritable.isSelfLooped()) {
+			this.blockIdWritable.set(dstBlockId);
 
-		this.pageRankValueWritable.setSumInformation();
-		this.pageRankValueWritable.setVertexId(dstVertexId);
-		this.pageRankValueWritable.setCurrentPageRank(currentPageRank);
-		this.pageRankValueWritable.setEdgeBlock(blockId);
-		this.pageRankValueWritable.setEdgeVertex(vertexId);
-		this.pageRankValueWritable.setDegree(vertexDegree);
+			this.pageRankValueWritable.setSumInformation();
+			this.pageRankValueWritable.setVertexId(dstVertexId);
+			this.pageRankValueWritable.setCurrentPageRank(currentPageRank);
+			this.pageRankValueWritable.setEdgeBlock(blockId);
+			this.pageRankValueWritable.setEdgeVertex(vertexId);
+			this.pageRankValueWritable.setDegree(vertexDegree);
 
-		context.write(blockIdWritable, pageRankValueWritable);
+			context.write(blockIdWritable, pageRankValueWritable);
+		}
 	}
-	
+
 }

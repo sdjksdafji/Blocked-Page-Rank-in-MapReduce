@@ -37,7 +37,7 @@ public class PageRankReducer extends
 			Context context) throws IOException, InterruptedException {
 
 		readDataFromMapper(key, values);
-		
+
 		computeUntilPageRanksConverge(context);
 
 		emitTheLocallyConvergedPageRank(context);
@@ -66,30 +66,32 @@ public class PageRankReducer extends
 
 	private void computeUntilPageRanksConverge(Context context)
 			throws IOException, InterruptedException {
-		double maxDiff = 0.0;
-		while(true) {
+		for (int i = 0; i < 5; i++) {
+			double maxDiff = 0.0;
 			for (PageRankValueWritable value : outcomingEdges) {
-				List<PageRankValueWritable> list = this.incomingEdges.get(value
-						.getVertexId());
-				if (list == null) {
-					System.err.println("serious error");
-					this.outputText.set("serious error");
-					context.write(blockIdWritable, outputText);
-					break;
+				if (!this.finishedNodes.contains(value.getVertexId())) {
+					List<PageRankValueWritable> list = this.incomingEdges
+							.get(value.getVertexId());
+					if (list == null) {
+						System.err.println("serious error");
+						this.outputText.set("serious error");
+						context.write(blockIdWritable, outputText);
+						break;
+					}
+					double currentPageRank = (1.0 - DAMPING_FACTOR)
+							/ InputFormatMapper.numOfNodes;
+					double previousPageRank = this.previousPageRank.get(value
+							.getVertexId());
+					for (PageRankValueWritable incomeVertex : list) {
+						currentPageRank += DAMPING_FACTOR
+								* (getLatestPageRankOfVertex(incomeVertex) / ((double) incomeVertex
+										.getDegree()));
+					}
+					this.pageRank.put(value.getVertexId(), currentPageRank);
+					this.finishedNodes.add(value.getVertexId());
+					double diff = Math.abs(currentPageRank - previousPageRank);
+					maxDiff = diff > maxDiff ? diff : maxDiff;
 				}
-				double currentPageRank = (1.0 - DAMPING_FACTOR)
-						/ InputFormatMapper.numOfNodes;
-				double previousPageRank = this.previousPageRank.get(value
-						.getVertexId());
-				for (PageRankValueWritable incomeVertex : list) {
-					currentPageRank += DAMPING_FACTOR
-							* (getLatestPageRankOfVertex(incomeVertex) / ((double) incomeVertex
-									.getDegree()));
-				}
-				this.pageRank.put(value.getVertexId(), currentPageRank);
-				this.finishedNodes.add(value.getVertexId());
-				double diff = Math.abs(currentPageRank - previousPageRank);
-				maxDiff = diff > maxDiff ? diff : maxDiff;
 			}
 			if (maxDiff < EPSILON || this.finishedNodes.size() == 0) {
 				break;
