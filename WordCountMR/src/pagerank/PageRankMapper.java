@@ -69,6 +69,7 @@ public class PageRankMapper extends
 		this.pageRankValueWritable.setCurrentPageRank(currentPageRank);
 		this.pageRankValueWritable.setEdgeBlock(dstBlockId);
 		this.pageRankValueWritable.setEdgeVertex(dstVertexId);
+		this.pageRankValueWritable.setVertexId(vertexDegree);
 
 		context.write(blockIdWritable, pageRankValueWritable);
 	}
@@ -82,7 +83,9 @@ public class PageRankMapper extends
 		this.pageRankValueWritable.setCurrentPageRank(currentPageRank);
 		this.pageRankValueWritable.setEdgeBlock(blockId);
 		this.pageRankValueWritable.setEdgeVertex(vertexId);
+		this.pageRankValueWritable.setVertexId(vertexDegree);
 
 		context.write(blockIdWritable, pageRankValueWritable);
 	}
+	
 }
