@@ -91,7 +91,7 @@ public class PageRankReducer extends
 				double diff = Math.abs(currentPageRank - previousPageRank);
 				maxDiff = diff > maxDiff ? diff : maxDiff;
 			}
-			if (maxDiff < EPSILON) {
+			if (maxDiff < EPSILON || this.finishedNodes.size() == 0) {
 				break;
 			}
 			this.previousPageRank = this.pageRank;
