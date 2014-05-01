@@ -19,7 +19,7 @@ public class HadoopDriver {
 		}
 
 		System.out.println("start running");
-		Job job = getJobForInputFormat(args);
+		Job job = getJobForCalculatingPageRank(args);
 
 		System.exit(job.waitForCompletion(true) ? 0 : 1);
 
@@ -74,6 +74,26 @@ public class HadoopDriver {
 
 		job.setMapperClass(pagerank.input_preprocessing.InputFormatMapper.class);
 		job.setReducerClass(pagerank.input_preprocessing.InputFormatReducer.class);
+
+		job.setInputFormatClass(TextInputFormat.class);
+		job.setOutputFormatClass(TextOutputFormat.class);
+
+		FileInputFormat.setInputPaths(job, new Path(args[0]));
+		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+		job.setJarByClass(HadoopDriver.class);
+		return job;
+	}
+	
+	private static Job getJobForCalculatingPageRank(String[] args) throws Exception {
+		Job job = Job.getInstance(new Configuration(), "calculating page rank");
+		job.setMapOutputKeyClass(IntWritable.class);
+		job.setMapOutputValueClass(pojo.PageRankValueWritable.class);
+		job.setOutputKeyClass(IntWritable.class);
+		job.setOutputValueClass(Text.class);
+
+		job.setMapperClass(pagerank.PageRankMapper.class);
+		job.setReducerClass(pagerank.PageRankReducer.class);
 
 		job.setInputFormatClass(TextInputFormat.class);
 		job.setOutputFormatClass(TextOutputFormat.class);
