@@ -35,6 +35,8 @@ public class InputFormatReducer extends
 				vertexToBlock.put(value.getEdgeVertex(), value.getEdgeBlock());
 			}
 		}
+		
+		ouputTestInfo(-1,"vertex size: " + edgeSet.size(),context);
 
 		this.blockIdWritable.set(key.get());
 
@@ -42,6 +44,7 @@ public class InputFormatReducer extends
 			if (value.isNodeInformation()) {
 				if (!edgeSet.containsKey(value.getVertexId())) {
 					System.err.println("serious error");
+					ouputTestInfo(-1,"serious error",context);
 					break;
 				}
 				Set<Integer> destinations = edgeSet.get(value.getVertexId());
@@ -55,6 +58,12 @@ public class InputFormatReducer extends
 				context.write(blockIdWritable, outputText);
 			}
 		}
+	}
+	
+	private void ouputTestInfo(int key, String str, Context context) throws IOException, InterruptedException{
+		this.blockIdWritable.set(key);
+		this.outputText.set(str);
+		context.write(blockIdWritable, outputText);
 	}
 
 }

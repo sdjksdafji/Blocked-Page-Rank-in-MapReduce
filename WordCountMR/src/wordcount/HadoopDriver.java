@@ -24,9 +24,9 @@ public class HadoopDriver {
 		System.exit(job.waitForCompletion(true) ? 0 : 1);
 
 	}
-	
-	private static Job getJobForWordCount(String[] args) throws Exception{
-		Job job = Job.getInstance(new Configuration(),"word count");
+
+	private static Job getJobForWordCount(String[] args) throws Exception {
+		Job job = Job.getInstance(new Configuration(), "word count");
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(IntWritable.class);
 
@@ -42,9 +42,11 @@ public class HadoopDriver {
 		job.setJarByClass(HadoopDriver.class);
 		return job;
 	}
-	
-	private static Job getJobForCalculateTotalNumberOfNode(String[] args) throws Exception{
-		Job job = Job.getInstance(new Configuration(),"calculate total num of node");
+
+	private static Job getJobForCalculateTotalNumberOfNode(String[] args)
+			throws Exception {
+		Job job = Job.getInstance(new Configuration(),
+				"calculate total num of node");
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(IntWritable.class);
 
@@ -58,13 +60,15 @@ public class HadoopDriver {
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
 		job.setNumReduceTasks(1);
-		
+
 		job.setJarByClass(HadoopDriver.class);
 		return job;
 	}
-	
-	private static Job getJobForInputFormat(String[] args) throws Exception{
-		Job job = Job.getInstance(new Configuration(),"formatting input");
+
+	private static Job getJobForInputFormat(String[] args) throws Exception {
+		Job job = Job.getInstance(new Configuration(), "formatting input");
+		job.setMapOutputKeyClass(IntWritable.class);
+		job.setMapOutputValueClass(pojo.PageRankValueWritable.class);
 		job.setOutputKeyClass(IntWritable.class);
 		job.setOutputValueClass(Text.class);
 

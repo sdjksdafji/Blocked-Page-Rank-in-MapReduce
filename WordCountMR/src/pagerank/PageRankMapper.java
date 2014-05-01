@@ -19,6 +19,7 @@ public class PageRankMapper extends
 	private double currentPageRank;
 	private int dstBlockId;
 	private int dstVertexId;
+	private int vertexDegree;
 
 	public void map(Object key, Text value, Context context)
 			throws IOException, InterruptedException {
@@ -51,6 +52,11 @@ public class PageRankMapper extends
 			return false;
 		}
 		this.dstVertexId = sc.nextInt();
+		
+		if(!sc.hasNextInt()){
+			return false;
+		}
+		this.vertexDegree = sc.nextInt();
 		return true;
 	}
 
