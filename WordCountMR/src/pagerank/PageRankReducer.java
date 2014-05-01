@@ -37,7 +37,7 @@ public class PageRankReducer extends
 			Context context) throws IOException, InterruptedException {
 
 		readDataFromMapper(key, values);
-
+		
 		computeUntilPageRanksConverge(context);
 
 		emitTheLocallyConvergedPageRank(context);
@@ -67,7 +67,7 @@ public class PageRankReducer extends
 	private void computeUntilPageRanksConverge(Context context)
 			throws IOException, InterruptedException {
 		double maxDiff = 0.0;
-		while (true) {
+		while(true) {
 			for (PageRankValueWritable value : outcomingEdges) {
 				List<PageRankValueWritable> list = this.incomingEdges.get(value
 						.getVertexId());
@@ -97,6 +97,7 @@ public class PageRankReducer extends
 			this.previousPageRank = this.pageRank;
 			this.pageRank = new HashMap<Integer, Double>();
 			this.finishedNodes = new HashSet<Integer>();
+			emitTheLocallyConvergedPageRank(context);
 		}
 	}
 
