@@ -18,8 +18,8 @@ public class HadoopDriver {
 			System.exit(-1);
 		}
 
-		System.out.println("hello world");
-		Job job = getJobForCalculateTotalNumberOfNode(args);
+		System.out.println("start running");
+		Job job = getJobForInputFormat(args);
 
 		System.exit(job.waitForCompletion(true) ? 0 : 1);
 
@@ -50,6 +50,26 @@ public class HadoopDriver {
 
 		job.setMapperClass(pagerank.input_preprocessing.CaclulateTotalNumberOfNodeMapper.class);
 		job.setReducerClass(IntSumReducer.class);
+
+		job.setInputFormatClass(TextInputFormat.class);
+		job.setOutputFormatClass(TextOutputFormat.class);
+
+		FileInputFormat.setInputPaths(job, new Path(args[0]));
+		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+		job.setNumReduceTasks(1);
+		
+		job.setJarByClass(HadoopDriver.class);
+		return job;
+	}
+	
+	private static Job getJobForInputFormat(String[] args) throws Exception{
+		Job job = Job.getInstance(new Configuration(),"formatting input");
+		job.setOutputKeyClass(IntWritable.class);
+		job.setOutputValueClass(Text.class);
+
+		job.setMapperClass(pagerank.input_preprocessing.InputFormatMapper.class);
+		job.setReducerClass(pagerank.input_preprocessing.InputFormatReducer.class);
 
 		job.setInputFormatClass(TextInputFormat.class);
 		job.setOutputFormatClass(TextOutputFormat.class);

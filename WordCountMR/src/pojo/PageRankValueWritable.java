@@ -13,6 +13,7 @@ public class PageRankValueWritable implements Writable {
 	private double currentPageRank;
 	private int edgeVertex;
 	private int edgeBlock;
+	private int degree;
 
 	public void readFields(DataInput in) throws IOException {
 		this.nodeInfoOrSumInfo = in.readBoolean();
@@ -20,6 +21,7 @@ public class PageRankValueWritable implements Writable {
 		this.currentPageRank = in.readDouble();
 		this.edgeVertex = in.readInt();
 		this.edgeBlock = in.readInt();
+		this.degree = in.readInt();
 	}
 
 	public void write(DataOutput out) throws IOException {
@@ -28,6 +30,7 @@ public class PageRankValueWritable implements Writable {
 		out.writeDouble(currentPageRank);
 		out.writeInt(edgeVertex);
 		out.writeInt(edgeBlock);
+		out.writeInt(degree);
 	}
 
 	public boolean isNodeInformation() {
@@ -76,6 +79,14 @@ public class PageRankValueWritable implements Writable {
 
 	public void setEdgeBlock(int edgeBlock) {
 		this.edgeBlock = edgeBlock;
+	}
+
+	public int getDegree() {
+		return degree;
+	}
+
+	public void setDegree(int degree) {
+		this.degree = degree;
 	}
 
 }

@@ -9,16 +9,19 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Mapper.Context;
 
+import pojo.PageRankValueWritable;
+
 /* format input to form:
- *	 block index of v + v + initial page rank of v + all edges start from v (in form block of destination + destination vertex)
+ *	 block index of v + v + initial page rank of v + all edges start from v (in form block of destination + destination vertex) + degree of v
  */
-public class InputFormatMapper extends Mapper<Object, Text, IntWritable, Text> {
+public class InputFormatMapper extends
+		Mapper<Object, Text, IntWritable, PageRankValueWritable> {
 	private static final double REJECT_MIN = 0.895 * 0.99;
 	private static final double REJECT_LIMIT = REJECT_MIN + 0.01;
-	private static final int numOfNodes = 7524402;
+	private static final int numOfNodes = 5;// 7524402;
 	private static final double INIT_PR = 1.0 / numOfNodes;
 	private IntWritable blockIdWritable = new IntWritable();
-	private Text strWritable = new Text();
+	private PageRankValueWritable pageRankValueWritable = new PageRankValueWritable();
 
 	@Override
 	public void map(Object key, Text value, Context contex) throws IOException,
@@ -82,7 +85,6 @@ public class InputFormatMapper extends Mapper<Object, Text, IntWritable, Text> {
 		return -1;
 	}
 
-
 	public static boolean selectInputLine(double x) {
 		return (((x >= REJECT_MIN) && (x < REJECT_LIMIT)) ? false : true);
 	}
@@ -92,11 +94,14 @@ public class InputFormatMapper extends Mapper<Object, Text, IntWritable, Text> {
 		int srcBlock = getBlockIdOfVertexId(src);
 		int dstBlock = getBlockIdOfVertexId(dst);
 
-		String outputText = "";
-		outputText = outputText + " " + src + " " + INIT_PR + " " + dstBlock
-				+ " " + dst;
 		this.blockIdWritable.set(srcBlock);
-		this.strWritable.set(outputText);
-		contex.write(blockIdWritable, strWritable);
+
+		this.pageRankValueWritable.setNodeInformation();
+		this.pageRankValueWritable.setVertexId(src);
+		this.pageRankValueWritable.setCurrentPageRank(INIT_PR);
+		this.pageRankValueWritable.setEdgeBlock(dstBlock);
+		this.pageRankValueWritable.setEdgeVertex(dst);
+
+		contex.write(blockIdWritable, pageRankValueWritable);
 	}
 }
