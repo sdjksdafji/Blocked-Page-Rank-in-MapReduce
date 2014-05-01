@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import org.apache.hadoop.io.Writable;
 
-public class PageRankValueWritable implements Writable {
+public class PageRankValueWritable implements Writable, Cloneable {
 
 	private boolean nodeInfoOrSumInfo; // true = node info; false = sum info
 	private int vertexId;
@@ -87,6 +87,30 @@ public class PageRankValueWritable implements Writable {
 
 	public void setDegree(int degree) {
 		this.degree = degree;
+	}
+
+	@Override
+	public String toString() {
+		return "PageRankValueWritable [nodeInfoOrSumInfo=" + nodeInfoOrSumInfo
+				+ ", vertexId=" + vertexId + ", currentPageRank="
+				+ currentPageRank + ", edgeVertex=" + edgeVertex
+				+ ", edgeBlock=" + edgeBlock + ", degree=" + degree + "]";
+	}
+
+	@Override
+	public PageRankValueWritable clone() {
+		PageRankValueWritable returnVal = new PageRankValueWritable();
+		if (this.isNodeInformation()) {
+			returnVal.setNodeInformation();
+		} else if (this.isSumInformation()) {
+			returnVal.setSumInformation();
+		}
+		returnVal.setVertexId(this.getVertexId());
+		returnVal.setCurrentPageRank(this.getCurrentPageRank());
+		returnVal.setEdgeBlock(this.getEdgeBlock());
+		returnVal.setEdgeVertex(this.getEdgeVertex());
+		returnVal.setDegree(this.getDegree());
+		return returnVal;
 	}
 
 }

@@ -1,8 +1,10 @@
 package pagerank.input_preprocessing;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,13 +20,13 @@ public class InputFormatReducer extends
 	private Text outputText = new Text();
 	private Map<Integer, Set<Integer>> edgeSet = new HashMap<Integer, Set<Integer>>();
 	private Map<Integer, Integer> vertexToBlock = new HashMap<Integer, Integer>();
+	private List<PageRankValueWritable> list = new ArrayList<PageRankValueWritable>();
 
 	@Override
 	public void reduce(IntWritable key, Iterable<PageRankValueWritable> values,
 			Context context) throws IOException, InterruptedException {
 		for (PageRankValueWritable value : values) {
 			if (value.isNodeInformation()) {
-
 				if (!edgeSet.containsKey(value.getVertexId())) {
 					edgeSet.put(value.getVertexId(), new HashSet<Integer>());
 				}
@@ -33,18 +35,19 @@ public class InputFormatReducer extends
 				edgeSet.put(value.getVertexId(), destinations);
 
 				vertexToBlock.put(value.getEdgeVertex(), value.getEdgeBlock());
+				
+				list.add(value.clone());
 			}
 		}
-		
-		ouputTestInfo(-1,"vertex size: " + edgeSet.size(),context);
+
 
 		this.blockIdWritable.set(key.get());
 
-		for (PageRankValueWritable value : values) {
+		for (PageRankValueWritable value : list) {
 			if (value.isNodeInformation()) {
 				if (!edgeSet.containsKey(value.getVertexId())) {
 					System.err.println("serious error");
-					ouputTestInfo(-1,"serious error",context);
+					ouputTestInfo(-1, "serious error", context);
 					break;
 				}
 				Set<Integer> destinations = edgeSet.get(value.getVertexId());
@@ -59,8 +62,9 @@ public class InputFormatReducer extends
 			}
 		}
 	}
-	
-	private void ouputTestInfo(int key, String str, Context context) throws IOException, InterruptedException{
+
+	private void ouputTestInfo(int key, String str, Context context)
+			throws IOException, InterruptedException {
 		this.blockIdWritable.set(key);
 		this.outputText.set(str);
 		context.write(blockIdWritable, outputText);
