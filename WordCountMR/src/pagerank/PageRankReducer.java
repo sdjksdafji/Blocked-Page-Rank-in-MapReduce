@@ -19,8 +19,8 @@ public class PageRankReducer extends
 		Reducer<IntWritable, PageRankValueWritable, IntWritable, Text> {
 
 	private static final double EPSILON = 1e-5;
-	private static final double DAMPING_FACTOR = 0.8;
-	private static boolean jacobAndGaussian = true; // true = jacob; false =
+	private static final double DAMPING_FACTOR = 0.85;
+	private static boolean jacobAndGaussian = false; // true = jacob; false =
 													// gaussian
 
 	private IntWritable blockIdWritable = new IntWritable();
@@ -59,33 +59,30 @@ public class PageRankReducer extends
 				List<PageRankValueWritable> list = this.incomingEdges.get(value
 						.getVertexId());
 				list.add(value.clone());
-				this.incomingEdges.put(value.getEdgeVertex(), list);
+				this.incomingEdges.put(value.getVertexId(), list);
 			}
 		}
 	}
 
 	private void computeUntilPageRanksConverge(Context context)
 			throws IOException, InterruptedException {
-		for (int i = 0; i < 5; i++) {
+		while (true) {
 			double maxDiff = 0.0;
 			for (PageRankValueWritable value : outcomingEdges) {
 				if (!this.finishedNodes.contains(value.getVertexId())) {
-					List<PageRankValueWritable> list = this.incomingEdges
-							.get(value.getVertexId());
-					if (list == null) {
-						System.err.println("serious error");
-						this.outputText.set("serious error");
-						context.write(blockIdWritable, outputText);
-						break;
-					}
+
 					double currentPageRank = (1.0 - DAMPING_FACTOR)
 							/ InputFormatMapper.numOfNodes;
 					double previousPageRank = this.previousPageRank.get(value
 							.getVertexId());
-					for (PageRankValueWritable incomeVertex : list) {
-						currentPageRank += DAMPING_FACTOR
-								* (getLatestPageRankOfVertex(incomeVertex) / ((double) incomeVertex
-										.getDegree()));
+					List<PageRankValueWritable> list = this.incomingEdges
+							.get(value.getVertexId());
+					if (list != null) {
+						for (PageRankValueWritable incomeVertex : list) {
+							currentPageRank += DAMPING_FACTOR
+									* (getLatestPageRankOfVertex(incomeVertex) / ((double) incomeVertex
+											.getDegree()));
+						}
 					}
 					this.pageRank.put(value.getVertexId(), currentPageRank);
 					this.finishedNodes.add(value.getVertexId());
