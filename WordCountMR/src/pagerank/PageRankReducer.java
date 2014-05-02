@@ -28,11 +28,11 @@ public class PageRankReducer extends
 	private IntWritable blockIdWritable = new IntWritable();
 	private Text outputText = new Text();
 
-	private Map<Integer, Double> previousPageRank = new HashMap<Integer, Double>();
-	private Map<Integer, Double> pageRank = new HashMap<Integer, Double>();
-	private Map<Integer, List<PageRankValueWritable>> incomingEdges = new HashMap<Integer, List<PageRankValueWritable>>();
-	private List<PageRankValueWritable> outcomingEdges = new ArrayList<PageRankValueWritable>();
-	private Set<Integer> finishedNodes = new HashSet<Integer>();
+	private Map<Integer, Double> previousPageRank;
+	private Map<Integer, Double> pageRank;
+	private Map<Integer, List<PageRankValueWritable>> incomingEdges;
+	private List<PageRankValueWritable> outcomingEdges;
+	private Set<Integer> finishedNodes;
 
 	@Override
 	public void reduce(IntWritable key, Iterable<PageRankValueWritable> values,
@@ -46,10 +46,18 @@ public class PageRankReducer extends
 		emitTheLocallyConvergedPageRank(context);
 	}
 
-	private void initAlgorithm(Context context){
+	private void initAlgorithm(Context context) {
 		Configuration conf = context.getConfiguration();
 		String methodStr = conf.get("Method");
 		jacobAndGaussian = Boolean.parseBoolean(methodStr);
+		String numOfNodesStr = conf.get("Number of Nodes");
+		FormatInputMapper.numOfNodes = Integer.parseInt(numOfNodesStr);
+
+		previousPageRank = new HashMap<Integer, Double>();
+		pageRank = new HashMap<Integer, Double>();
+		incomingEdges = new HashMap<Integer, List<PageRankValueWritable>>();
+		outcomingEdges = new ArrayList<PageRankValueWritable>();
+		finishedNodes = new HashSet<Integer>();
 	}
 
 	private void readDataFromMapper(IntWritable key,

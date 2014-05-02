@@ -117,7 +117,7 @@ public class HadoopDriver {
 	}
 
 	private static Job getJobForCalculatingPageRank(String inputDir,
-			String outputDir, boolean method) throws Exception {
+			String outputDir, int numOfNodes, boolean method) throws Exception {
 		Job job = Job.getInstance(new Configuration(), "calculating page rank");
 		job.setMapOutputKeyClass(IntWritable.class);
 		job.setMapOutputValueClass(pojo.PageRankValueWritable.class);
@@ -135,6 +135,7 @@ public class HadoopDriver {
 
 		Configuration conf = job.getConfiguration();
 		conf.set("Method", Boolean.toString(method));
+		conf.set("Number of Nodes", Integer.toString(numOfNodes));
 
 		job.setJarByClass(HadoopDriver.class);
 		return job;
@@ -221,7 +222,7 @@ public class HadoopDriver {
 					JOB_HOME_DIR
 							+ ConfigurationParameter
 									.getPageRankIterationDirectory(iter + 1),
-					PageRankReducer.jacobAndGaussian);
+					numOfNodes, PageRankReducer.jacobAndGaussian);
 
 			System.out.println("Start iteration " + (iter + 1) + "...");
 

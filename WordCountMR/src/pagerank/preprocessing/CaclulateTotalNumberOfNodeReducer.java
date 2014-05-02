@@ -13,17 +13,19 @@ import driver.PAGE_RANK_COUNTER;
 public class CaclulateTotalNumberOfNodeReducer extends
 		Reducer<Text, IntWritable, Text, IntWritable> {
 	private IntWritable totalNumberOfNodes = new IntWritable();
-	private Set<Integer> nodeSet = new HashSet<Integer>();
+	private Set<Integer> nodeSet;
+
 	@Override
 	public void reduce(Text key, Iterable<IntWritable> values, Context context)
 			throws IOException, InterruptedException {
-		for(IntWritable value:values){
+		nodeSet = new HashSet<Integer>();
+		for (IntWritable value : values) {
 			nodeSet.add(value.get());
 		}
-		
+
 		totalNumberOfNodes.set(nodeSet.size());
 		context.write(key, totalNumberOfNodes);
-		context.getCounter(PAGE_RANK_COUNTER.NUM_OF_NODES)
-		.increment(nodeSet.size());
+		context.getCounter(PAGE_RANK_COUNTER.NUM_OF_NODES).increment(
+				nodeSet.size());
 	}
 }
