@@ -1,0 +1,5 @@
+package driver;
+
+public enum PAGE_RANK_COUNTER {
+	TOTAL_INNER_ITERATION, UNCONVERGED_REDUCER
+}

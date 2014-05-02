@@ -1,15 +1,20 @@
-package wordcount;
+package driver;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Counter;
+import org.apache.hadoop.mapreduce.Counters;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.mapreduce.lib.reduce.IntSumReducer;
+
+import wordcount.WordMapper;
+import wordcount.WordReducer;
 
 public class HadoopDriver {
 	public static void main(String[] args) throws Exception {
@@ -21,7 +26,14 @@ public class HadoopDriver {
 		System.out.println("start running");
 		Job job = getJobForCalculatingPageRank(args);
 
-		System.exit(job.waitForCompletion(true) ? 0 : 1);
+		job.waitForCompletion(true);
+
+		Counters counters = job.getCounters();
+		Counter c = counters
+				.findCounter(PAGE_RANK_COUNTER.TOTAL_INNER_ITERATION);
+		System.out.println(c.getDisplayName() + ":" + c.getValue());
+		c = counters.findCounter(PAGE_RANK_COUNTER.UNCONVERGED_REDUCER);
+		System.out.println(c.getDisplayName() + ":" + c.getValue());
 
 	}
 
@@ -84,8 +96,9 @@ public class HadoopDriver {
 		job.setJarByClass(HadoopDriver.class);
 		return job;
 	}
-	
-	private static Job getJobForCalculatingPageRank(String[] args) throws Exception {
+
+	private static Job getJobForCalculatingPageRank(String[] args)
+			throws Exception {
 		Job job = Job.getInstance(new Configuration(), "calculating page rank");
 		job.setMapOutputKeyClass(IntWritable.class);
 		job.setMapOutputValueClass(pojo.PageRankValueWritable.class);

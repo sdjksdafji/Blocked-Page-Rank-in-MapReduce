@@ -12,6 +12,7 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
+import driver.PAGE_RANK_COUNTER;
 import pagerank.input_preprocessing.InputFormatMapper;
 import pojo.PageRankValueWritable;
 
@@ -21,7 +22,7 @@ public class PageRankReducer extends
 	private static final double EPSILON = 1e-5;
 	private static final double DAMPING_FACTOR = 0.85;
 	private static boolean jacobAndGaussian = false; // true = jacob; false =
-													// gaussian
+														// gaussian
 
 	private IntWritable blockIdWritable = new IntWritable();
 	private Text outputText = new Text();
@@ -66,6 +67,7 @@ public class PageRankReducer extends
 
 	private void computeUntilPageRanksConverge(Context context)
 			throws IOException, InterruptedException {
+		boolean isReducerConverged = true;
 		while (true) {
 			double maxDiff = 0.0;
 			for (PageRankValueWritable value : outcomingEdges) {
@@ -93,10 +95,16 @@ public class PageRankReducer extends
 			if (maxDiff < EPSILON || this.finishedNodes.size() == 0) {
 				break;
 			}
+			isReducerConverged = false;
 			this.previousPageRank = this.pageRank;
 			this.pageRank = new HashMap<Integer, Double>();
 			this.finishedNodes = new HashSet<Integer>();
-			emitTheLocallyConvergedPageRank(context);
+			context.getCounter(PAGE_RANK_COUNTER.TOTAL_INNER_ITERATION)
+					.increment(1);
+		}
+		if (!isReducerConverged) {
+			context.getCounter(PAGE_RANK_COUNTER.UNCONVERGED_REDUCER)
+					.increment(1);
 		}
 	}
 
