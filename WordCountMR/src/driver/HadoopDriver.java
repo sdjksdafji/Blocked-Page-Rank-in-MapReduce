@@ -71,8 +71,8 @@ public class HadoopDriver {
 		return job;
 	}
 
-	private static Job getJobForInputFormat(String inputDir, String outputDir)
-			throws Exception {
+	private static Job getJobForInputFormat(String inputDir, String outputDir,
+			int numOfNodes) throws Exception {
 		Job job = Job.getInstance(new Configuration(), "formatting input");
 		job.setMapOutputKeyClass(IntWritable.class);
 		job.setMapOutputValueClass(pojo.PageRankValueWritable.class);
@@ -88,12 +88,36 @@ public class HadoopDriver {
 		FileInputFormat.setInputPaths(job, new Path(inputDir));
 		FileOutputFormat.setOutputPath(job, new Path(outputDir));
 
+		Configuration conf = job.getConfiguration();
+		conf.set("Number of Nodes", Integer.toString(numOfNodes));
+
+		job.setJarByClass(HadoopDriver.class);
+		return job;
+	}
+
+	private static Job getJobForOutputFormat(String inputDir, String outputDir)
+			throws Exception {
+		Job job = Job.getInstance(new Configuration(), "formatting onput");
+		job.setMapOutputKeyClass(IntWritable.class);
+		job.setMapOutputValueClass(pojo.PageRankValueWritable.class);
+		job.setOutputKeyClass(Text.class);
+		job.setOutputValueClass(Text.class);
+
+		job.setMapperClass(pagerank.postprocessing.FormatOutputMapper.class);
+		job.setReducerClass(pagerank.postprocessing.FormatOutputReducer.class);
+
+		job.setInputFormatClass(TextInputFormat.class);
+		job.setOutputFormatClass(TextOutputFormat.class);
+
+		FileInputFormat.setInputPaths(job, new Path(inputDir));
+		FileOutputFormat.setOutputPath(job, new Path(outputDir));
+
 		job.setJarByClass(HadoopDriver.class);
 		return job;
 	}
 
 	private static Job getJobForCalculatingPageRank(String inputDir,
-			String outputDir) throws Exception {
+			String outputDir, boolean method) throws Exception {
 		Job job = Job.getInstance(new Configuration(), "calculating page rank");
 		job.setMapOutputKeyClass(IntWritable.class);
 		job.setMapOutputValueClass(pojo.PageRankValueWritable.class);
@@ -108,6 +132,9 @@ public class HadoopDriver {
 
 		FileInputFormat.setInputPaths(job, new Path(inputDir));
 		FileOutputFormat.setOutputPath(job, new Path(outputDir));
+
+		Configuration conf = job.getConfiguration();
+		conf.set("Method", Boolean.toString(method));
 
 		job.setJarByClass(HadoopDriver.class);
 		return job;
@@ -165,12 +192,13 @@ public class HadoopDriver {
 		System.out.println("Total number of nodes in this graph is "
 				+ c.getValue());
 
-		FormatInputMapper.numOfNodes = (int) c.getValue();
+		int numOfNodes = (int) c.getValue();
 
 		// ---------------------------------------------------------
 
 		job = getJobForInputFormat(INPUT_FILE, JOB_HOME_DIR
-				+ ConfigurationParameter.getPageRankIterationDirectory(0));
+				+ ConfigurationParameter.getPageRankIterationDirectory(0),
+				numOfNodes);
 
 		System.out.println("Start formatting input...");
 		System.out.println("Taking input file from \"" + INPUT_FILE + "\"");
@@ -186,13 +214,14 @@ public class HadoopDriver {
 
 		int iter = 0;
 		while (true) {
-			job = getJobForInputFormat(
+			job = getJobForCalculatingPageRank(
 					JOB_HOME_DIR
 							+ ConfigurationParameter
 									.getPageRankIterationDirectory(iter),
 					JOB_HOME_DIR
 							+ ConfigurationParameter
-									.getPageRankIterationDirectory(iter + 1));
+									.getPageRankIterationDirectory(iter + 1),
+					PageRankReducer.jacobAndGaussian);
 
 			System.out.println("Start iteration " + (iter + 1) + "...");
 
@@ -206,14 +235,31 @@ public class HadoopDriver {
 			System.out.println("The number of unconverged reducer: "
 					+ c.getValue());
 
+			iter++;
+			System.out.println("Waiting for eventual consistency of S3");
+			Thread.sleep(ConfigurationParameter.EVENTUAL_CONSISTENCY_WAIT_TIME * 1000);
+
 			if (c.getValue() == 0) {
 				System.out.println("The page ranks have converged...");
 				break;
 			}
-			iter++;
-			System.out.println("Waiting for eventual consistency of S3");
-			Thread.sleep(ConfigurationParameter.EVENTUAL_CONSISTENCY_WAIT_TIME * 1000);
 		}
+		// ---------------------------------------------------------
+
+		job = getJobForOutputFormat(
+				JOB_HOME_DIR
+						+ ConfigurationParameter
+								.getPageRankIterationDirectory(iter),
+				JOB_HOME_DIR + ConfigurationParameter.OUTPUT_DIR);
+
+		System.out.println("Start formatting output...");
+		System.out.println("Taking input file from \"" + JOB_HOME_DIR
+				+ ConfigurationParameter.getPageRankIterationDirectory(iter)
+				+ "\"");
+		System.out.println("Writing output file to \"" + JOB_HOME_DIR
+				+ ConfigurationParameter.OUTPUT_DIR + "\"");
+
+		job.waitForCompletion(true);
 
 	}
 }

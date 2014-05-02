@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -19,13 +20,15 @@ public class FormatInputMapper extends
 	private static final double REJECT_MIN = 0.895 * 0.99;
 	private static final double REJECT_LIMIT = REJECT_MIN + 0.01;
 	public static int numOfNodes = -1;// 7524402;
-	private static final double INIT_PR = 1.0 / numOfNodes;
+	private static double INIT_PR = 1.0 / numOfNodes;
 	private IntWritable blockIdWritable = new IntWritable();
 	private PageRankValueWritable pageRankValueWritable = new PageRankValueWritable();
 
 	@Override
-	public void map(Object key, Text value, Context contex) throws IOException,
-			InterruptedException {
+	public void map(Object key, Text value, Context context)
+			throws IOException, InterruptedException {
+		initNumOfNodes(context);
+
 		Scanner sc = new Scanner(value.toString());
 		while (sc.hasNextInt()) {
 			int src, dst;
@@ -44,7 +47,7 @@ public class FormatInputMapper extends
 				continue;
 			}
 
-			formatDataAndEmit(src, dst, contex);
+			formatDataAndEmit(src, dst, context);
 		}
 		sc.close();
 	}
@@ -85,6 +88,13 @@ public class FormatInputMapper extends
 		return -1;
 	}
 
+	private void initNumOfNodes(Context context) {
+		Configuration conf = context.getConfiguration();
+		String numOfNodesStr = conf.get("Number of Nodes");
+		numOfNodes = Integer.parseInt(numOfNodesStr);
+		INIT_PR = 1.0 / numOfNodes;
+	}
+
 	public static boolean selectInputLine(double x) {
 		return (((x >= REJECT_MIN) && (x < REJECT_LIMIT)) ? false : true);
 	}
@@ -103,11 +113,12 @@ public class FormatInputMapper extends
 		this.pageRankValueWritable.setEdgeVertex(dst);
 
 		contex.write(blockIdWritable, pageRankValueWritable);
-		
-		// write out a self looped edge in case a node do not have out-going edge
-		
+
+		// write out a self looped edge in case a node do not have out-going
+		// edge
+
 		this.blockIdWritable.set(dstBlock);
-		
+
 		this.pageRankValueWritable.setNodeInformation();
 		this.pageRankValueWritable.setVertexId(dst);
 		this.pageRankValueWritable.setCurrentPageRank(INIT_PR);

@@ -4,6 +4,7 @@ public class ConfigurationParameter {
 	public static final int EVENTUAL_CONSISTENCY_WAIT_TIME = 15;
 
 	public static final String NODE_NUMBER_DIR = "NodeNum";
+	public static final String OUTPUT_DIR = "PageRankOutput";
 	private static final String PR_ITERATION_BASE_DIR = "Iteration";
 
 	public static String getPageRankIterationDirectory(int iter) {

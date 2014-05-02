@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -22,7 +23,7 @@ public class PageRankReducer extends
 	private static final double EPSILON = 1e-5;
 	private static final double DAMPING_FACTOR = 0.85;
 	public static boolean jacobAndGaussian = false; // true = jacobi; false =
-														// gaussian
+													// gaussian
 
 	private IntWritable blockIdWritable = new IntWritable();
 	private Text outputText = new Text();
@@ -36,12 +37,19 @@ public class PageRankReducer extends
 	@Override
 	public void reduce(IntWritable key, Iterable<PageRankValueWritable> values,
 			Context context) throws IOException, InterruptedException {
+		initAlgorithm(context);
 
 		readDataFromMapper(key, values);
 
 		computeUntilPageRanksConverge(context);
 
 		emitTheLocallyConvergedPageRank(context);
+	}
+
+	private void initAlgorithm(Context context){
+		Configuration conf = context.getConfiguration();
+		String methodStr = conf.get("Method");
+		jacobAndGaussian = Boolean.parseBoolean(methodStr);
 	}
 
 	private void readDataFromMapper(IntWritable key,
