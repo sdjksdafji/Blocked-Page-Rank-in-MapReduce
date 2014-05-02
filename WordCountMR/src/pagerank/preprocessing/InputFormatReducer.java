@@ -1,4 +1,4 @@
-package pagerank.input_preprocessing;
+package pagerank.preprocessing;
 
 import java.io.IOException;
 import java.util.ArrayList;

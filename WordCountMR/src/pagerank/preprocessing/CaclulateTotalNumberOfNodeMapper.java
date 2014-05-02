@@ -1,4 +1,4 @@
-package pagerank.input_preprocessing;
+package pagerank.preprocessing;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -7,12 +7,15 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
+import driver.PAGE_RANK_COUNTER;
+
 public class CaclulateTotalNumberOfNodeMapper extends
 		Mapper<Object, Text, Text, IntWritable> {
 	private final static Text outputText = new Text("Total number of node: ");
-	private final static IntWritable one = new IntWritable(1);
-	public void map(Object key, Text value, Context context) throws IOException,
-			InterruptedException {
+	private static IntWritable vertexId = new IntWritable(1);
+
+	public void map(Object key, Text value, Context context)
+			throws IOException, InterruptedException {
 		Scanner sc = new Scanner(value.toString());
 		while (sc.hasNextInt()) {
 			int src, dst;
@@ -30,8 +33,12 @@ public class CaclulateTotalNumberOfNodeMapper extends
 			if (!InputFormatMapper.selectInputLine(rand)) {
 				continue;
 			}
-			
-			context.write(outputText, one);
+
+			this.vertexId.set(src);
+			context.write(outputText, vertexId);
+
+			this.vertexId.set(dst);
+			context.write(outputText, vertexId);
 		}
 		sc.close();
 	}

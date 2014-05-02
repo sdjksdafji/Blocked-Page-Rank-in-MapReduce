@@ -13,7 +13,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import driver.PAGE_RANK_COUNTER;
-import pagerank.input_preprocessing.InputFormatMapper;
+import pagerank.preprocessing.InputFormatMapper;
 import pojo.PageRankValueWritable;
 
 public class PageRankReducer extends
@@ -21,7 +21,7 @@ public class PageRankReducer extends
 
 	private static final double EPSILON = 1e-5;
 	private static final double DAMPING_FACTOR = 0.85;
-	private static boolean jacobAndGaussian = false; // true = jacob; false =
+	public static boolean jacobAndGaussian = false; // true = jacobi; false =
 														// gaussian
 
 	private IntWritable blockIdWritable = new IntWritable();

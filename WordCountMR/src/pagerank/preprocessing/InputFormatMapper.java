@@ -1,4 +1,4 @@
-package pagerank.input_preprocessing;
+package pagerank.preprocessing;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -18,7 +18,7 @@ public class InputFormatMapper extends
 		Mapper<Object, Text, IntWritable, PageRankValueWritable> {
 	private static final double REJECT_MIN = 0.895 * 0.99;
 	private static final double REJECT_LIMIT = REJECT_MIN + 0.01;
-	public static final int numOfNodes = 5;// 7524402;
+	public static int numOfNodes = -1;// 7524402;
 	private static final double INIT_PR = 1.0 / numOfNodes;
 	private IntWritable blockIdWritable = new IntWritable();
 	private PageRankValueWritable pageRankValueWritable = new PageRankValueWritable();
