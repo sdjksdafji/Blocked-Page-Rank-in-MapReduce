@@ -30,7 +30,7 @@ public class CaclulateTotalNumberOfNodeMapper extends
 			}
 			rand = sc.nextFloat();
 
-			if (!InputFormatMapper.selectInputLine(rand)) {
+			if (!FormatInputMapper.selectInputLine(rand)) {
 				continue;
 			}
 

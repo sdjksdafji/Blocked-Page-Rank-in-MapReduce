@@ -14,7 +14,7 @@ import pojo.PageRankValueWritable;
 /* format input to form:
  *	 block index of v + v + initial page rank of v + all edges start from v (in form block of destination + destination vertex) + degree of v
  */
-public class InputFormatMapper extends
+public class FormatInputMapper extends
 		Mapper<Object, Text, IntWritable, PageRankValueWritable> {
 	private static final double REJECT_MIN = 0.895 * 0.99;
 	private static final double REJECT_LIMIT = REJECT_MIN + 0.01;

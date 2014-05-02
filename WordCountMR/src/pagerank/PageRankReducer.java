@@ -13,7 +13,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import driver.PAGE_RANK_COUNTER;
-import pagerank.preprocessing.InputFormatMapper;
+import pagerank.preprocessing.FormatInputMapper;
 import pojo.PageRankValueWritable;
 
 public class PageRankReducer extends
@@ -74,7 +74,7 @@ public class PageRankReducer extends
 				if (!this.finishedNodes.contains(value.getVertexId())) {
 
 					double currentPageRank = (1.0 - DAMPING_FACTOR)
-							/ InputFormatMapper.numOfNodes;
+							/ FormatInputMapper.numOfNodes;
 					double previousPageRank = this.previousPageRank.get(value
 							.getVertexId());
 					List<PageRankValueWritable> list = this.incomingEdges

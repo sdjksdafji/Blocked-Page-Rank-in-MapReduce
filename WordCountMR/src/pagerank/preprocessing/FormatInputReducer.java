@@ -14,7 +14,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 import pojo.PageRankValueWritable;
 
-public class InputFormatReducer extends
+public class FormatInputReducer extends
 		Reducer<IntWritable, PageRankValueWritable, IntWritable, Text> {
 	private IntWritable blockIdWritable = new IntWritable();
 	private Text outputText = new Text();

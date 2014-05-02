@@ -14,7 +14,7 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.mapreduce.lib.reduce.IntSumReducer;
 
 import pagerank.PageRankReducer;
-import pagerank.preprocessing.InputFormatMapper;
+import pagerank.preprocessing.FormatInputMapper;
 import wordcount.WordMapper;
 import wordcount.WordReducer;
 
@@ -79,8 +79,8 @@ public class HadoopDriver {
 		job.setOutputKeyClass(IntWritable.class);
 		job.setOutputValueClass(Text.class);
 
-		job.setMapperClass(pagerank.preprocessing.InputFormatMapper.class);
-		job.setReducerClass(pagerank.preprocessing.InputFormatReducer.class);
+		job.setMapperClass(pagerank.preprocessing.FormatInputMapper.class);
+		job.setReducerClass(pagerank.preprocessing.FormatInputReducer.class);
 
 		job.setInputFormatClass(TextInputFormat.class);
 		job.setOutputFormatClass(TextOutputFormat.class);
@@ -165,7 +165,7 @@ public class HadoopDriver {
 		System.out.println("Total number of nodes in this graph is "
 				+ c.getValue());
 
-		InputFormatMapper.numOfNodes = (int) c.getValue();
+		FormatInputMapper.numOfNodes = (int) c.getValue();
 
 		// ---------------------------------------------------------
 
