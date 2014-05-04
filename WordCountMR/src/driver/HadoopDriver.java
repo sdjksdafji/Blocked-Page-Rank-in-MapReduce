@@ -239,6 +239,16 @@ public class HadoopDriver {
 			job.waitForCompletion(true);
 
 			counters = job.getCounters();
+			c = counters
+					.findCounter(PAGE_RANK_COUNTER.ACCUMULATIVE_RESIDUAL_ERROR);
+			double normalizedAccumulativeResidualError = (double) c.getValue();
+			c = counters.findCounter(PAGE_RANK_COUNTER.NUM_OF_RESIDUAL_ERROR);
+			double numOfResidualError = (double) c.getValue();
+			System.out
+					.println("The average residual error in this iteration is: "
+							+ (normalizedAccumulativeResidualError
+									/ ConfigurationParameter.RESIDUAL_ERROR_ACCURACY / numOfResidualError));
+
 			c = counters.findCounter(PAGE_RANK_COUNTER.TOTAL_INNER_ITERATION);
 			System.out.println("The number of iterations in all reducers: "
 					+ c.getValue());
