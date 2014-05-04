@@ -21,6 +21,7 @@ import wordcount.WordReducer;
 public class HadoopDriver {
 	private static String JOB_HOME_DIR;
 	private static String INPUT_FILE;
+	private static boolean useSimpleMethod = false;
 
 	public static void main(String[] args) throws Exception {
 
@@ -124,8 +125,13 @@ public class HadoopDriver {
 		job.setOutputKeyClass(IntWritable.class);
 		job.setOutputValueClass(Text.class);
 
-		job.setMapperClass(pagerank.BlockedPageRankMapper.class);
-		job.setReducerClass(pagerank.BlockedPageRankReducer.class);
+		if (useSimpleMethod) {
+			job.setMapperClass(pagerank.SimplePageRankMapper.class);
+			job.setReducerClass(pagerank.SimplePageRankReducer.class);
+		} else {
+			job.setMapperClass(pagerank.BlockedPageRankMapper.class);
+			job.setReducerClass(pagerank.BlockedPageRankReducer.class);
+		}
 
 		job.setInputFormatClass(TextInputFormat.class);
 		job.setOutputFormatClass(TextOutputFormat.class);
@@ -133,9 +139,11 @@ public class HadoopDriver {
 		FileInputFormat.setInputPaths(job, new Path(inputDir));
 		FileOutputFormat.setOutputPath(job, new Path(outputDir));
 
-		Configuration conf = job.getConfiguration();
-		conf.set("Method", Boolean.toString(method));
-		conf.set("Number of Nodes", Integer.toString(numOfNodes));
+		if (!useSimpleMethod) {
+			Configuration conf = job.getConfiguration();
+			conf.set("Method", Boolean.toString(method));
+			conf.set("Number of Nodes", Integer.toString(numOfNodes));
+		}
 
 		job.setJarByClass(HadoopDriver.class);
 		return job;
@@ -144,16 +152,18 @@ public class HadoopDriver {
 	private static void validateInputArguments(String[] args) {
 		if (args.length != 3) {
 			System.out
-					.println("usage: \n[use Gauss-Seidel or Jacobi]\n[input file or directory]\n[home directory of the job in s3n protocol]");
+					.println("usage: \n[use Simple Method or Blocked Gauss-Seidel or Blocked Jacobi]\n[input file or directory]\n[home directory of the job in s3n protocol]");
 			System.exit(-1);
 		}
 		if (args[0].charAt(0) == 'j' || args[0].charAt(0) == 'J') {
 			BlockedPageRankReducer.jacobAndGaussian = true;
 		} else if (args[0].charAt(0) == 'g' || args[0].charAt(0) == 'G') {
 			BlockedPageRankReducer.jacobAndGaussian = false;
+		} else if (args[0].charAt(0) == 's' || args[0].charAt(0) == 'S') {
+			useSimpleMethod = true;
 		} else {
 			System.out
-					.println("usage: \n[use gaussian or jacobi]\n[home directory of the job in s3n protocol]");
+					.println("usage: \n[use Simple Method or Blocked Gauss-Seidel or Blocked Jacobi]\n[input file or directory]\n[home directory of the job in s3n protocol]");
 			System.exit(-1);
 		}
 
@@ -164,11 +174,9 @@ public class HadoopDriver {
 			JOB_HOME_DIR = JOB_HOME_DIR + "/";
 		}
 
-		System.out
-				.println("Using "
-						+ (BlockedPageRankReducer.jacobAndGaussian ? "Jacobi"
-								: "Gauss-Seidel")
-						+ " method to calculate page rank");
+		System.out.println("Using "
+				+ (BlockedPageRankReducer.jacobAndGaussian ? "Jacobi"
+						: "Gauss-Seidel") + " method to calculate page rank");
 		System.out.println("The output directory for this job is \""
 				+ JOB_HOME_DIR + "\"");
 	}
