@@ -10,6 +10,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Mapper.Context;
 
+import driver.PAGE_RANK_COUNTER;
 import pojo.PageRankValueWritable;
 
 /* format input to form:
@@ -101,6 +102,9 @@ public class FormatInputMapper extends
 
 	private void formatDataAndEmit(int src, int dst, Context contex)
 			throws InterruptedException, IOException {
+
+		contex.getCounter(PAGE_RANK_COUNTER.NUM_OF_FILTERED_EDGES).increment(1);
+
 		int srcBlock = getBlockIdOfVertexId(src);
 		int dstBlock = getBlockIdOfVertexId(dst);
 

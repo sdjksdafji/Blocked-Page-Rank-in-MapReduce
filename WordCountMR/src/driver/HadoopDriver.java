@@ -219,6 +219,12 @@ public class HadoopDriver {
 
 		job.waitForCompletion(true);
 
+		c = counters.findCounter(PAGE_RANK_COUNTER.NUM_OF_FILTERED_EDGES);
+
+		System.out
+				.println("Total number of edges actully selected in this graph is "
+						+ c.getValue());
+
 		System.out.println("Waiting for eventual consistency of S3");
 		Thread.sleep(ConfigurationParameter.EVENTUAL_CONSISTENCY_WAIT_TIME * 1000);
 		// ---------------------------------------------------------
