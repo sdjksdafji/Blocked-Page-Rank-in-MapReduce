@@ -7,3 +7,7 @@ The project provides 3 method to calculate page rank of a node: simple method, b
 [use Simple Method or Blocked Gauss-Seidel or Blocked Jacobi: <simple, gauss, jacob>]
 [input file or directory: you need to use s3n protocol]
 [home directory of the job in s3n protocol]
+
+The net id we used is "yw598".
+
+
