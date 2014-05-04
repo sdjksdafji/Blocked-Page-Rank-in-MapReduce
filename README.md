@@ -10,4 +10,20 @@ The project provides 3 method to calculate page rank of a node: simple method, b
 
 The net id we used is "yw598".
 
+Gerenal Architecture:
+
+"driver" package contains hadoop driver, global counter, and configuration information.
+
+"pageranck" package contains all mappers and reducers including these for pre and post processing purposes.
+
+Mapper and Reducer functionality:
+
+"CaclulateTotalNumberOfNodeMapper" and "CaclulateTotalNumberOfNodeReducer" filters the edge then account the number of unique nodes and returns the number by global counter.
+
+"FormatInputMapper" and "FormatInputReducer" filters and refomats the edge file.
+
+"BlockedPageRankMapper", "BlockedPageRankReducer", "SimplePageRankMapper", and "SimplePageRankReducer" implments the algorithm iteration.
+
+"FormatOuputMapper" and "FormatOutReducer" cleans and formats the calculation results for output.
+
 
