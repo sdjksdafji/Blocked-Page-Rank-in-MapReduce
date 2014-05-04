@@ -9,7 +9,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import pojo.PageRankValueWritable;
 
-public class PageRankMapper extends
+public class BlockedPageRankMapper extends
 		Mapper<Object, Text, IntWritable, PageRankValueWritable> {
 	private IntWritable blockIdWritable = new IntWritable();
 	private PageRankValueWritable pageRankValueWritable = new PageRankValueWritable();

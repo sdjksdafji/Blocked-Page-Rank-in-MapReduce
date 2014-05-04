@@ -17,7 +17,7 @@ import driver.PAGE_RANK_COUNTER;
 import pagerank.preprocessing.FormatInputMapper;
 import pojo.PageRankValueWritable;
 
-public class PageRankReducer extends
+public class BlockedPageRankReducer extends
 		Reducer<IntWritable, PageRankValueWritable, IntWritable, Text> {
 
 	private static final double EPSILON = 1e-5;

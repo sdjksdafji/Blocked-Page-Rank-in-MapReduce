@@ -13,7 +13,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.mapreduce.lib.reduce.IntSumReducer;
 
-import pagerank.PageRankReducer;
+import pagerank.BlockedPageRankReducer;
 import pagerank.preprocessing.FormatInputMapper;
 import wordcount.WordMapper;
 import wordcount.WordReducer;
@@ -124,8 +124,8 @@ public class HadoopDriver {
 		job.setOutputKeyClass(IntWritable.class);
 		job.setOutputValueClass(Text.class);
 
-		job.setMapperClass(pagerank.PageRankMapper.class);
-		job.setReducerClass(pagerank.PageRankReducer.class);
+		job.setMapperClass(pagerank.BlockedPageRankMapper.class);
+		job.setReducerClass(pagerank.BlockedPageRankReducer.class);
 
 		job.setInputFormatClass(TextInputFormat.class);
 		job.setOutputFormatClass(TextOutputFormat.class);
@@ -148,9 +148,9 @@ public class HadoopDriver {
 			System.exit(-1);
 		}
 		if (args[0].charAt(0) == 'j' || args[0].charAt(0) == 'J') {
-			PageRankReducer.jacobAndGaussian = true;
+			BlockedPageRankReducer.jacobAndGaussian = true;
 		} else if (args[0].charAt(0) == 'g' || args[0].charAt(0) == 'G') {
-			PageRankReducer.jacobAndGaussian = false;
+			BlockedPageRankReducer.jacobAndGaussian = false;
 		} else {
 			System.out
 					.println("usage: \n[use gaussian or jacobi]\n[home directory of the job in s3n protocol]");
@@ -166,7 +166,7 @@ public class HadoopDriver {
 
 		System.out
 				.println("Using "
-						+ (PageRankReducer.jacobAndGaussian ? "Jacobi"
+						+ (BlockedPageRankReducer.jacobAndGaussian ? "Jacobi"
 								: "Gauss-Seidel")
 						+ " method to calculate page rank");
 		System.out.println("The output directory for this job is \""
@@ -222,7 +222,7 @@ public class HadoopDriver {
 					JOB_HOME_DIR
 							+ ConfigurationParameter
 									.getPageRankIterationDirectory(iter + 1),
-					numOfNodes, PageRankReducer.jacobAndGaussian);
+					numOfNodes, BlockedPageRankReducer.jacobAndGaussian);
 
 			System.out.println("Start iteration " + (iter + 1) + "...");
 
