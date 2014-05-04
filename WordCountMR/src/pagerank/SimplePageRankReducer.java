@@ -71,7 +71,7 @@ public class SimplePageRankReducer extends
 							.getDegree()));
 		}
 
-		maxDiff = Math.abs(pageRank - previousPageRank);
+		maxDiff = Math.abs(pageRank - previousPageRank) / pageRank;
 
 		context.getCounter(PAGE_RANK_COUNTER.TOTAL_INNER_ITERATION)
 				.increment(1);

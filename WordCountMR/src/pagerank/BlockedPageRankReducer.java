@@ -20,7 +20,7 @@ import pojo.PageRankValueWritable;
 public class BlockedPageRankReducer extends
 		Reducer<IntWritable, PageRankValueWritable, IntWritable, Text> {
 
-	public static final double EPSILON = 1e-5;
+	public static final double EPSILON = 1e-3;
 	public static final double DAMPING_FACTOR = 0.85;
 	public static boolean jacobAndGaussian = false; // true = jacobi; false =
 													// gaussian
@@ -104,7 +104,7 @@ public class BlockedPageRankReducer extends
 					}
 					this.pageRank.put(value.getVertexId(), currentPageRank);
 					this.finishedNodes.add(value.getVertexId());
-					double diff = Math.abs(currentPageRank - previousPageRank);
+					double diff = Math.abs(currentPageRank - previousPageRank)/currentPageRank;
 					maxDiff = diff > maxDiff ? diff : maxDiff;
 				}
 			}
