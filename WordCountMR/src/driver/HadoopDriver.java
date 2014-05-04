@@ -139,11 +139,11 @@ public class HadoopDriver {
 		FileInputFormat.setInputPaths(job, new Path(inputDir));
 		FileOutputFormat.setOutputPath(job, new Path(outputDir));
 
+		Configuration conf = job.getConfiguration();
 		if (!useSimpleMethod) {
-			Configuration conf = job.getConfiguration();
 			conf.set("Method", Boolean.toString(method));
-			conf.set("Number of Nodes", Integer.toString(numOfNodes));
 		}
+		conf.set("Number of Nodes", Integer.toString(numOfNodes));
 
 		job.setJarByClass(HadoopDriver.class);
 		return job;
