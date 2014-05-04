@@ -8,7 +8,7 @@ The project provides 3 method to calculate page rank of a node: simple method, b
 [input file or directory: you need to use s3n protocol]
 [home directory of the job in s3n protocol]
 
-The net id we used is "yw598".
+The net id we used is "yw598". REJECT MIN = 0.895 * 0.99; REJECT LIMIT = 0.895 * 0.99; + 0.01;
 
 Gerenal Architecture:
 
