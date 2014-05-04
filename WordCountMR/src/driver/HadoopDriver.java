@@ -175,8 +175,10 @@ public class HadoopDriver {
 		}
 
 		System.out.println("Using "
-				+ (BlockedPageRankReducer.jacobAndGaussian ? "Jacobi"
-						: "Gauss-Seidel") + " method to calculate page rank");
+				+ (useSimpleMethod ? "Simple Method"
+						: (BlockedPageRankReducer.jacobAndGaussian ? "Jacobi"
+								: "Gauss-Seidel"))
+				+ " method to calculate page rank");
 		System.out.println("The output directory for this job is \""
 				+ JOB_HOME_DIR + "\"");
 	}
