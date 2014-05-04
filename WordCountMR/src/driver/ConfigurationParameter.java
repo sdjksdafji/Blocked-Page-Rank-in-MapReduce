@@ -2,6 +2,7 @@ package driver;
 
 public class ConfigurationParameter {
 	public static final int EVENTUAL_CONSISTENCY_WAIT_TIME = 15;
+	public static final double RESIDUAL_ERROR_ACCURACY = 1e6;
 
 	public static final String NODE_NUMBER_DIR = "NodeNum";
 	public static final String OUTPUT_DIR = "PageRankOutput";

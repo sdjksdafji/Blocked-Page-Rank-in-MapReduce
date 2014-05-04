@@ -8,9 +8,11 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.Reducer.Context;
 
 import pagerank.preprocessing.FormatInputMapper;
 import pojo.PageRankValueWritable;
+import driver.ConfigurationParameter;
 import driver.PAGE_RANK_COUNTER;
 
 public class SimplePageRankReducer extends
@@ -19,8 +21,8 @@ public class SimplePageRankReducer extends
 	private IntWritable blockIdWritable = new IntWritable();
 	private Text outputText = new Text();
 
-	private double previousPageRank;
-	private double pageRank;
+	private double previousPageRank = 0;
+	private double pageRank = 0;
 	private List<PageRankValueWritable> outcomingEdges;
 	private List<PageRankValueWritable> sumInfo;
 
@@ -73,6 +75,8 @@ public class SimplePageRankReducer extends
 
 		maxDiff = Math.abs(pageRank - previousPageRank) / pageRank;
 
+		setResidualError(context);
+
 		context.getCounter(PAGE_RANK_COUNTER.TOTAL_INNER_ITERATION)
 				.increment(1);
 		if (maxDiff > BlockedPageRankReducer.EPSILON) {
@@ -80,6 +84,16 @@ public class SimplePageRankReducer extends
 					.increment(1);
 		}
 
+	}
+
+	private void setResidualError(Context context) {
+		double accumulativeResidualError = Math
+				.abs(pageRank - previousPageRank) / pageRank;
+		long normalizedAccumulativeResidualError = (long) (accumulativeResidualError * ConfigurationParameter.RESIDUAL_ERROR_ACCURACY);
+		context.getCounter(PAGE_RANK_COUNTER.ACCUMULATIVE_RESIDUAL_ERROR)
+				.increment(normalizedAccumulativeResidualError);
+		context.getCounter(PAGE_RANK_COUNTER.NUM_OF_RESIDUAL_ERROR)
+				.increment(1);
 	}
 
 	private void emitTheLocallyConvergedPageRank(Context context)
