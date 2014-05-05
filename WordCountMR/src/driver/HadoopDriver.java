@@ -218,7 +218,7 @@ public class HadoopDriver {
 				+ "\"");
 
 		job.waitForCompletion(true);
-
+		counters = job.getCounters();
 		c = counters.findCounter(PAGE_RANK_COUNTER.NUM_OF_FILTERED_EDGES);
 
 		System.out
