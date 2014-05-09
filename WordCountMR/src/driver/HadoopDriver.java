@@ -250,10 +250,12 @@ public class HadoopDriver {
 			double normalizedAccumulativeResidualError = (double) c.getValue();
 			c = counters.findCounter(PAGE_RANK_COUNTER.NUM_OF_RESIDUAL_ERROR);
 			double numOfResidualError = (double) c.getValue();
+			double averageResidualError = normalizedAccumulativeResidualError
+					/ ConfigurationParameter.RESIDUAL_ERROR_ACCURACY
+					/ numOfResidualError;
 			System.out
 					.println("The average residual error in this iteration is: "
-							+ (normalizedAccumulativeResidualError
-									/ ConfigurationParameter.RESIDUAL_ERROR_ACCURACY / numOfResidualError));
+							+ averageResidualError);
 
 			c = counters.findCounter(PAGE_RANK_COUNTER.TOTAL_INNER_ITERATION);
 			System.out.println("The number of iterations in all reducers: "
@@ -266,7 +268,7 @@ public class HadoopDriver {
 			System.out.println("Waiting for eventual consistency of S3");
 			Thread.sleep(ConfigurationParameter.EVENTUAL_CONSISTENCY_WAIT_TIME * 1000);
 
-			if (c.getValue() == 0) {
+			if (averageResidualError < BlockedPageRankReducer.EPSILON) {
 				System.out.println("The page ranks have converged...");
 				break;
 			}

@@ -29,7 +29,7 @@ public class SimplePageRankReducer extends
 	@Override
 	public void reduce(IntWritable key, Iterable<PageRankValueWritable> values,
 			Context context) throws IOException, InterruptedException {
-		initAlgorithm(context);
+		initAlgorithm(key, context);
 
 		readDataFromMapper(key, values);
 
@@ -38,13 +38,13 @@ public class SimplePageRankReducer extends
 		emitTheLocallyConvergedPageRank(context);
 	}
 
-	private void initAlgorithm(Context context) {
+	private void initAlgorithm(IntWritable key, Context context) {
 		Configuration conf = context.getConfiguration();
 		String numOfNodesStr = conf.get("Number of Nodes");
 		FormatInputMapper.numOfNodes = Integer.parseInt(numOfNodesStr);
 
-		this.blockIdWritable.set(0); // block id is irrelevant in simple page
-										// rank algorithm
+		this.blockIdWritable.set(FormatInputMapper.getBlockIdOfVertexId(key
+				.get()));
 
 		sumInfo = new ArrayList<PageRankValueWritable>();
 		outcomingEdges = new ArrayList<PageRankValueWritable>();

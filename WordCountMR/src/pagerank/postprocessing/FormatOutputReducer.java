@@ -14,6 +14,10 @@ public class FormatOutputReducer extends
 		Reducer<IntWritable, PageRankValueWritable, Text, Text> {
 	private Set<Integer> finishedVertex = new HashSet<Integer>();
 
+	private double maxPageRank = -1;
+	private int maxVertex = -1;
+	private int maxBlock = -1;
+
 	private Text keyText = new Text();
 	private Text valueText = new Text();
 
@@ -22,14 +26,16 @@ public class FormatOutputReducer extends
 			Context context) throws IOException, InterruptedException {
 		valueText.set("");
 		for (PageRankValueWritable value : values) {
-			if (!finishedVertex.contains(value.getVertexId())) {
-				String outputStr = "[ Vertex: " + value.getVertexId()
-						+ " ] -> [ Page Rank: " + value.getCurrentPageRank()
-						+ " ]";
-				valueText.set(outputStr);
-				context.write(keyText, valueText);
-				finishedVertex.add(value.getVertexId());
+			if (value.getCurrentPageRank() > this.maxPageRank) {
+				this.maxPageRank = value.getCurrentPageRank();
+				this.maxVertex = value.getVertexId();
+				maxBlock = key.get();
 			}
 		}
+		keyText.set("The vertex has largest PR in block : " + maxBlock);
+		String outputStr = "[ Vertex: " + maxVertex + " ] -> [ Page Rank: "
+				+ maxPageRank + " ]";
+		valueText.set(outputStr);
+		context.write(keyText, valueText);
 	}
 }

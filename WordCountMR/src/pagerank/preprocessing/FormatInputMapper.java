@@ -53,7 +53,7 @@ public class FormatInputMapper extends
 		sc.close();
 	}
 
-	private int getBlockIdOfVertexId(int n) {
+	public static int getBlockIdOfVertexId(int n) {
 		int[] boundary = new int[] { 10328, 20373, 30629, 40645, 50462, 60841,
 				70591, 80118, 90497, 100501, 110567, 120945, 130999, 140574,
 				150953, 161332, 171154, 181514, 191625, 202004, 212383, 222762,
@@ -118,7 +118,7 @@ public class FormatInputMapper extends
 
 		contex.write(blockIdWritable, pageRankValueWritable);
 
-		// write out a self looped edge in case a node do not have out-going
+		// write out dummy edge in case a node do not have out-going
 		// edge
 
 		this.blockIdWritable.set(dstBlock);
@@ -127,7 +127,7 @@ public class FormatInputMapper extends
 		this.pageRankValueWritable.setVertexId(dst);
 		this.pageRankValueWritable.setCurrentPageRank(INIT_PR);
 		this.pageRankValueWritable.setEdgeBlock(dstBlock);
-		this.pageRankValueWritable.setEdgeVertex(dst);
+		this.pageRankValueWritable.setEdgeVertex(-1);
 
 		contex.write(blockIdWritable, pageRankValueWritable);
 	}

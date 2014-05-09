@@ -34,7 +34,8 @@ public class PageRankValueWritable implements Writable, Cloneable {
 	}
 
 	public boolean isSelfLooped() {
-		return this.vertexId == this.edgeVertex;
+		// return this.vertexId == this.edgeVertex;
+		return this.edgeVertex < 0;
 	}
 
 	public boolean isNodeInformation() {
